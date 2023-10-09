@@ -17,7 +17,7 @@ class Pruis {
         print("Models: LE, LE AWD, XLE, XLE AWD, Limited, Limited AWD")
         print("\nColors: Cutting Edge, Guardian Grey, Midnight BLack Metallic, Supersonic Red, Wind Chill Pearl, Reservoir Blue")
         print("\nPackages: Toyota Safety Sense, Rain-sensing variable intermittent windshield wipers, Auto-dimming rearview mirror with Homelink")
-        print("\nLeather seats, heated seats, Wireless phone charging, Fixed glass roof, Power liftback")
+        print("\nAccesories: Leather seats, heated seats, Wireless phone charging, Fixed glass roof, Power liftback")
     }
     
     func carDisplay() {
