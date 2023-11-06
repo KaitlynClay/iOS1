@@ -124,9 +124,9 @@ class FoodCalcs{
 }
 let foodData = FoodCalcs()
 
-let itemName = "bacon"
+let itemName = "peanut butter"
 let amount = 2
-let unit = "slices"
+let unit = "cups"
 
 if let nutritionAmount = foodData.nutritionAmmounts(for: itemName, amount: Double(amount), unit: unit) {
     let fat = Int(round(nutritionAmount[0]))
