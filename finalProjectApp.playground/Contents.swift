@@ -1,19 +1,33 @@
 import UIKit
 
+extension Double {
+    func rounded(toPlaces places: Int) -> Double {
+        let divisor = pow(10.0, Double(places))
+        return (self * divisor).rounded() / divisor
+    }
+}
+
+
 
 class UserData{
     var nameUser: String
     var emailUser: String
     var phoneUser: String
+    var ageUser: Int
+    var heightUser: Double //inches
+    var weightUser: Double  //pounds
     
-    init(nameUser: String, emailUser: String, phoneUser: String) {
+    init(nameUser: String, emailUser: String, phoneUser: String, ageUser: Int, heightUser: Double, weightUser: Double) {
         self.nameUser = nameUser
         self.emailUser = emailUser
         self.phoneUser = phoneUser
+        self.ageUser = ageUser
+        self.heightUser = heightUser
+        self.weightUser = weightUser
     }
     
     func introMessage() {
-        print("Welcome!\n Please choose to log in or sign up.\n")
+        print("Welcome! \nPlease choose to log in or sign up.\n")
     }
     
     func signUp() {
@@ -27,16 +41,27 @@ class UserData{
         print("\nWelcome back \(self.nameUser)!")
     }
     
+    func calcBMI() -> Double {
+        var calcBMI = (weightUser / (heightUser * heightUser) * 703).rounded(toPlaces: 1)
+        return calcBMI
+    }
+    
+    func disBMI() {
+        let bmi = calcBMI()
+        print("Your BMI is \(bmi)\n")
+    }
+    
 }
 
 let nameUserHard = "Jade Lennox"
 let emailUserHard = "jlennox9610@gmail.com"
 let phoneUserHard = "(608) 864-2506"
 
-let userData = UserData(nameUser: nameUserHard, emailUser: emailUserHard, phoneUser: phoneUserHard)
+let userData = UserData(nameUser: nameUserHard, emailUser: emailUserHard, phoneUser: phoneUserHard, ageUser: 25, heightUser: 69, weightUser: 145)
 userData.introMessage()
 userData.signUp()
 userData.login()
+userData.disBMI()
 
 
 class FoodCalcs{
@@ -61,7 +86,7 @@ class FoodCalcs{
                                             "worcesterchire": [0, 47.3, 0, 0, 245, 15.31, 7.65, 22.95],
                                             "peanut butter": [130, 50.5, 15.5, 64.7, 258, 16.13, 8.07, 24.21],
                                             "grape jelly":[0, 13, 1, 0, 320, 20, 10, 30]]
-    func nutritionAmmounts(for foodName: String, amount: Double, unit: String) -> [Double]?  {
+    func nutritionAmounts(for foodName: String, amount: Double, unit: String) -> [Double]?  {
         if let foodInfo = foodDataDict[foodName] {
             if unit == "cups" {
                 let conversionFactor = foodInfo[4]
@@ -121,14 +146,53 @@ class FoodCalcs{
         }
         return nil
     }
+    
+    func calcTotalCalories(ingredients: [String: (Double, String)]) -> Double? {
+        var totalCalories = 0.0
+        for (foodName, (amount, unit)) in ingredients {
+            if let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
+                let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
+                totalCalories += calories
+            } else {
+                return nil
+            }
+        }
+        return totalCalories
+    }
+    
+    struct CalorieTracker {
+        var dayCalorieAmount: Double = 0.0
+        var eatenCalorieAmount: Double = 0.0
+        
+        mutating func setDayCalorieAmount(calories: Double) -> Double? {
+            dayCalorieAmount += calories
+            return dayCalorieAmount
+        }
+        mutating func addEatenCalorieAmount(calories: Double) {
+            eatenCalorieAmount += calories
+        }
+        mutating func calcRemainingCalories() -> Double? {
+            return dayCalorieAmount - eatenCalorieAmount
+        }
+    }
+    var calorieTrack = CalorieTracker()
+    
+    func addEatenCaloriesFromFood(foodName: String, amount: Double, unit:String) {
+        if  let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
+            let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
+            calorieTrack.addEatenCalorieAmount(calories: calories)
+        }
+    }
 }
+
 let foodData = FoodCalcs()
+foodData.calorieTrack.setDayCalorieAmount(calories: 2000)
 
-let itemName = "peanut butter"
-let amount = 2
-let unit = "cups"
+let itemName = "whole milk"
+let amount = 16
+let unit = "fluid ounces"
 
-if let nutritionAmount = foodData.nutritionAmmounts(for: itemName, amount: Double(amount), unit: unit) {
+if let nutritionAmount = foodData.nutritionAmounts(for: itemName, amount: Double(amount), unit: unit) {
     let fat = Int(round(nutritionAmount[0]))
     let carbs = Int(round(nutritionAmount[1]))
     let fiber = Int(round(nutritionAmount[2]))
@@ -141,12 +205,23 @@ if let nutritionAmount = foodData.nutritionAmmounts(for: itemName, amount: Doubl
 } else {
     print("Food not found in directory")
 }
+
+foodData.addEatenCaloriesFromFood(foodName: itemName, amount: Double(amount), unit: unit)
+
+if let calGoal = foodData.calorieTrack.setDayCalorieAmount(calories: 0) {
+    let goal = Int(calGoal)
+    print("\nCalorie Goal: \(goal) calories")
+}
+
+if let totalCalorie = foodData.calcTotalCalories(ingredients: [itemName : (Double(amount), unit)]) {
+    let calories = Int(round(totalCalorie))
+    print("Total calories: \(calories) calories")
+}
     
-
-
-
-
-
+if let remainingCalories = foodData.calorieTrack.calcRemainingCalories() {
+    var remainCal = Int(round(remainingCalories))
+    print("Remainng calories: \(remainCal) calories")
+}
 
 
 
