@@ -7,6 +7,11 @@ extension Double {
     }
 }
 
+struct DailyFoodInput {
+    var day: String
+    var foodItems: [(String, Double, String)]
+}
+
 
 
 class UserData{
@@ -147,18 +152,18 @@ class FoodCalcs{
         return nil
     }
     
-    func calcTotalCalories(ingredients: [String: (Double, String)]) -> Double? {
-        var totalCalories = 0.0
-        for (foodName, (amount, unit)) in ingredients {
-            if let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
-                let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
-                totalCalories += calories
-            } else {
-                return nil
-            }
-        }
-        return totalCalories
-    }
+//    func calcTotalCalories(ingredients: [(String, Double, String)]) -> Double? {
+//        var totalCalories = 0.0
+//        for (foodName, amount, unit) in ingredients {
+//            if let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
+//                let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
+//                totalCalories += calories
+//            } else {
+//                return nil
+//            }
+//        }
+//        return totalCalories
+//    }
     
     struct CalorieTracker {
         var dayCalorieAmount: Double = 0.0
@@ -177,10 +182,63 @@ class FoodCalcs{
     }
     var calorieTrack = CalorieTracker()
     
-    func addEatenCaloriesFromFood(foodName: String, amount: Double, unit:String) {
-        if  let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
-            let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
-            calorieTrack.addEatenCalorieAmount(calories: calories)
+//    func addEatenCaloriesFromFood(foodItems: [(String, Double, String)]) {
+//        for (foodName, amount, unit) in foodItems {
+//            if  let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
+//                let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
+//                calorieTrack.addEatenCalorieAmount(calories: calories)
+//            }
+//        }
+//    }
+    
+    var weeklyFoodInputs: [String: DailyFoodInput] = [:]
+    
+    func addFoodToInput(day: String, foodItems: [(String, Double, String)]) {
+        let dailyInput = DailyFoodInput(day: day, foodItems: foodItems)
+        weeklyFoodInputs[day] = dailyInput
+    }
+    
+    func calcTotalCalories(forDay day: String) -> Double? {
+        guard let dailyInput = weeklyFoodInputs[day]
+        else{
+            return nil
+        }
+        var totalCals = 0.0
+        for (foodName, amount, unit) in dailyInput.foodItems {
+            if let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
+                let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
+                totalCals += calories
+            } else {
+                return nil
+            }
+        }
+        return totalCals
+    }
+    
+    func calcRemainingCals(forDay day: String) -> Double? {
+        guard let dailyInput = weeklyFoodInputs[day]
+        else {
+            return nil
+        }
+        let totalCals = calcTotalCalories(forDay: day) ?? 0.0
+        let eatenCals = dailyInput.foodItems.reduce(0.0) { result, foodItem in
+            if let nutritionAmount = nutritionAmounts(for: foodItem.0, amount: foodItem.1, unit: foodItem.2) {
+                let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
+                return result + calories
+            } else {
+                return result
+            }
+        }
+        return totalCals - eatenCals
+    }
+    
+    func addEatenCalsFromFood(foodItems: [(String, Double, String)]) {
+        for (foodName, amount, unit) in foodItems{
+            if let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
+                let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
+                calorieTrack.addEatenCalorieAmount(calories: calories)
+                print("Consumed \(Int(round(calories))) calories from \(amount) \(unit) of \(foodName)")
+            }
         }
     }
 }
@@ -192,28 +250,66 @@ let itemName = "whole milk"
 let amount = 16
 let unit = "fluid ounces"
 
-if let nutritionAmount = foodData.nutritionAmounts(for: itemName, amount: Double(amount), unit: unit) {
-    let fat = Int(round(nutritionAmount[0]))
-    let carbs = Int(round(nutritionAmount[1]))
-    let fiber = Int(round(nutritionAmount[2]))
-    let protein = Int(round(nutritionAmount[3]))
-    print("Adjusted nutrition for \(amount) \(unit) of \(itemName)")
-    print("Fat: \(fat) grams")
-    print("Carbs: \(carbs) grams")
-    print("Fiber: \(fiber) grams")
-    print("Protien: \(protein) grams")
-} else {
-    print("Food not found in directory")
+let mondayFood = [
+    ("whole milk", 2, "cups"),
+    ("peanut butter", 2.0, "tablespoons"),
+    ("grape jelly", 2, "tablespoons")
+]
+
+//for (foodName, amount, unit) in mondayFood {
+//    if let nutritionAmount = foodData.nutritionAmounts(for: foodName, amount: amount, unit: unit) {
+//        let fat = nutritionAmount[0]
+//        let carbs = nutritionAmount[1]
+//        let fiber = nutritionAmount[2]
+//        let protein = nutritionAmount[3]
+//        print("Nutritional amounts for \(amount) \(unit) of \(itemName)")
+//        print("Fat: \(fat) grams")
+//        print("Carbs: \(carbs) grams")
+//        print("Fiber: \(fiber) grams")
+//        print("Protien: \(protein) grams")
+//    } else {
+//        print("Food not found in directory")
+//    }
+//    }
+
+     
+                   
+foodData.addFoodToInput(day: "Monday", foodItems: mondayFood)
+foodData.addEatenCalsFromFood(foodItems: mondayFood)
+
+if let totCalMonday = foodData.calcTotalCalories(forDay: "Monday") {
+    let calories = Int(round(totCalMonday))
+    print("Total calories consumed on Monday: \(calories)")
 }
 
-foodData.addEatenCaloriesFromFood(foodName: itemName, amount: Double(amount), unit: unit)
+if let remainingCalMonday = foodData.calcRemainingCals(forDay: "Monday") {
+    let remainCal = Int(round(remainingCalMonday))
+    print("Remainnig calories for Monday: \(remainCal)")
+}
+                   
+//if let nutritionAmount = foodData.nutritionAmounts(for: itemName, amount: Double(amount), unit: unit) {
+//    let fat = Int(round(nutritionAmount[0]))
+//    let carbs = Int(round(nutritionAmount[1]))
+//    let fiber = Int(round(nutritionAmount[2]))
+//    let protein = Int(round(nutritionAmount[3]))
+//    print("Adjusted nutrition for \(amount) \(unit) of \(itemName)")
+//    print("Fat: \(fat) grams")
+//    print("Carbs: \(carbs) grams")
+//    print("Fiber: \(fiber) grams")
+//    print("Protien: \(protein) grams")
+//} else {
+//    print("Food not found in directory")
+//}
+
+//foodData.addEatenCalsFromFood(foodName: itemName, amount: Double(amount), unit: unit)
 
 if let calGoal = foodData.calorieTrack.setDayCalorieAmount(calories: 0) {
     let goal = Int(calGoal)
     print("\nCalorie Goal: \(goal) calories")
 }
 
-if let totalCalorie = foodData.calcTotalCalories(ingredients: [itemName : (Double(amount), unit)]) {
+
+if let totalCalorie = foodData.calcTotalCalories(forDay: "Monday") {
     let calories = Int(round(totalCalorie))
     print("Total calories: \(calories) calories")
 }
