@@ -1,5 +1,6 @@
 import UIKit
 
+// func that specifies how many decimal places a number can have
 extension Double {
     func rounded(toPlaces places: Int) -> Double {
         let divisor = pow(10.0, Double(places))
@@ -7,29 +8,40 @@ extension Double {
     }
 }
 
+// for the multiple foods/day. Sets a format that the data passed has to follow
 struct DailyFoodInput {
     var day: String
     var foodItems: [(String, Double, String)]
 }
 
 
-
+// class that has all the users more personel data
 class UserData{
+    // defining all the variables that will be used in the UserData class
     var nameUser: String
     var emailUser: String
     var phoneUser: String
+    var ageUser: Int
+    var heightUser: Double //inches
+    var weightUser: Double  //pounds
+
     
     
     init(nameUser: String, emailUser: String, phoneUser: String, ageUser: Int, heightUser: Double, weightUser: Double) {
         self.nameUser = nameUser
         self.emailUser = emailUser
         self.phoneUser = phoneUser
+        self.ageUser = ageUser
+        self.heightUser = heightUser
+        self.weightUser = weightUser
     }
     
+    // message which would print out when a user first enters the app
     func introMessage() {
         print("Welcome! \nPlease choose to log in or sign up.\n")
     }
     
+    // func for the user to create an account
     func signUp() {
         print("Thank you for creating an account!")
         print("Your name is \(self.nameUser)")
@@ -37,23 +49,45 @@ class UserData{
         print("Your email is \(self.emailUser)")
     }
     
+    // func for a returning user
     func login() {
         print("\nWelcome back \(self.nameUser)!\n")
     }
     
+    // calculating the BMI of the user (uses lbs and height in inches)
+    func calcBMI() -> Double {
+        var calcBMI = (weightUser / (heightUser * heightUser) * 703).rounded(toPlaces: 1)
+        return calcBMI
+    }
+    
+    // func to format how the BMI will be displayed
+    func disBMI() {
+        let bmi = calcBMI()
+        print("Your BMI is \(bmi)\n")
+    }
+
+    
     
 }
 
+// hardcoding the name, email, and phone of the user
 let nameUserHard = "Jade Lennox"
 let emailUserHard = "jlennox9610@gmail.com"
 let phoneUserHard = "(608) 864-2506"
 
+// passing the user data to the UserData class and defining what the values for the BMI calc will be
 let userData = UserData(nameUser: nameUserHard, emailUser: emailUserHard, phoneUser: phoneUserHard, ageUser: 25, heightUser: 69, weightUser: 145)
+// calls the welcom message to be printed
 userData.introMessage()
+// calls the sign up messages to be printed
 userData.signUp()
+// calls the welcome back user message
 userData.login()
+// calls the BMI calculation message
+userData.disBMI()
 
 
+// all the food data and manipulation
 class FoodCalcs{
     // food name: fat, carbs, fiber, protein, grams/cup(or slice), grams/lb, grams/teaspoon, grams/tablesppon(in grams and cup measurements: exceptions(slices) bread, bacon, )
     // find calorie count: 1g fat = ~9cal; 1g carb = ~ 4cal; 1g fiber = ~ 2cal(negligible); 1g protien = ~ 4cal;
@@ -79,11 +113,13 @@ class FoodCalcs{
 
     
 
-    
+    // calculating the grams in each amount of the different hardcoded foods
     func nutritionAmounts(for foodName: String, amount: Double, unit: String) -> [Double]? {
+        // seeing if the food the user entered is in the foodDataDict
         if let foodInfo = foodDataDict[foodName] {
             let gramsPerUnit: Double
             
+            // calculating the measurments
             switch unit {
             case "cups":
                 gramsPerUnit = foodInfo[4]
@@ -102,6 +138,7 @@ class FoodCalcs{
             
             let amountInGrams = amount * gramsPerUnit
             
+            // calculating the nutrition amount of the food for the amount specified
             let nutritionAmount: [Double] = [
             (foodInfo[0] / foodInfo[4]) * amountInGrams,
             (foodInfo[1] / foodInfo[4]) * amountInGrams,
@@ -115,47 +152,57 @@ class FoodCalcs{
     
     
 
-    
+    // keeps track of how many calories/day the user wants to consume
     struct CalorieTracker {
+        // defining the calorie amounts variables
         var dayCalorieAmount: Double = 0.0
         var eatenCalorieAmount: Double = 0.0
         
+        // setting the calorie goal amount for the corresponding day
         mutating func setDayCalorieAmount(calories: Double) -> Double? {
             dayCalorieAmount += calories
             return dayCalorieAmount
         }
+        // adding the calories from the eaten food to the in-struct value
         mutating func addEatenCalorieAmount(calories: Double) {
             eatenCalorieAmount += calories
         }
+        // calculating how many calories remain
         mutating func calcRemainingCalories() -> Double? {
             return dayCalorieAmount - eatenCalorieAmount
         }
     }
+    // defining the CalorieTracker struct to be used outside the struct
     var calorieTrack = CalorieTracker()
     
 
-    
+    // defining a variable to hold the food inputs for the week
     var weeklyFoodInputs: [String: DailyFoodInput] = [:]
     
+    // adding the inputted food from the user to be able to be manipulated
     func addFoodToInput(day: String, foodItems: [(String, Double, String)]) {
         let dailyInput = DailyFoodInput(day: day, foodItems: foodItems)
         weeklyFoodInputs[day] = dailyInput
     }
     
+    // setting the calorie goal for the corresponding day
     func setCalorieGoal(forDay day: String, calories: Double) {
             foodData.calorieTrack.setDayCalorieAmount(calories: calories)
         }
-
+    
+    // getting the calorie goal from the func that set it
     func getCalorieGoal(forDay day: String) -> Double? {
         return foodData.calorieTrack.dayCalorieAmount
     }
     
+    // calcing the total calories from the foods the user inputted
     func calcTotalCalories(forDay day: String) -> Double? {
         guard let dailyInput = weeklyFoodInputs[day]
         else{
             return nil
         }
         var totalCals = 0.0
+        // finding/using the amounts from the foods to find the total calories consumed
         for (foodName, amount, unit) in dailyInput.foodItems {
             if let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
                 let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
@@ -164,14 +211,17 @@ class FoodCalcs{
                 return nil
             }
         }
+        // returning the total calorie amount
         return totalCals
     }
     
+    // finds the eaten calorie amount and returns how many calories are left
     func calcRemainingCals(forDay day: String, calorieGoal: Double) -> Double? {
         guard let dailyInput = weeklyFoodInputs[day]
         else {
             return nil
         }
+        // finding the calorie amount that has been consumed
         let eatenCals = dailyInput.foodItems.reduce(0.0) { result, foodItem in
             if let nutritionAmount = nutritionAmounts(for: foodItem.0, amount: foodItem.1, unit: foodItem.2) {
                 let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
@@ -180,9 +230,11 @@ class FoodCalcs{
                 return result
             }
         }
+        // returning the number of calories left in the calorie goal and if the calories left is in the negatives it will return 0
         return max(0, calorieGoal - eatenCals)
     }
     
+    // calcs and displays the calories from a specific amount of a food
     func addEatenCalsFromFood(foodItems: [(String, Double, String)]) {
         for (foodName, amount, unit) in foodItems{
             if let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
@@ -195,6 +247,7 @@ class FoodCalcs{
 }
 
 let foodData = FoodCalcs()
+// setting the calorie goals for each day of the week
 let calorieGoalMonday: Double = 2000
 let calorieGoalTuesday: Double = 2080
 let calorieGoalWednesday: Double = 1900
@@ -204,6 +257,7 @@ let calorieGoalSaturday: Double = 2000
 let calorieGoalSunday: Double = 1700
 
 
+// sending the calorie goal amount to the func that will set it
 foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalMonday)
 foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalTuesday)
 foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalWednesday)
@@ -215,7 +269,7 @@ foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalSunday)
 
 
 
-
+// hardcoding the foods for each day
 let mondayFood = [
     ("peanut butter", 1, "cups"),
     ("salted butter", 2.0, "tablespoons"),
@@ -260,7 +314,7 @@ let sundayFood = [
 
 
      
-                   
+// sending the food data to the addFoodToInput and the addEatenCalsFromFood to be able to be manipulated
 foodData.addFoodToInput(day: "Monday", foodItems: mondayFood)
 foodData.addEatenCalsFromFood(foodItems: mondayFood)
 foodData.addFoodToInput(day: "Tuesday", foodItems: tuesdayFood)
@@ -276,6 +330,8 @@ foodData.addEatenCalsFromFood(foodItems: saturdayFood)
 foodData.addFoodToInput(day: "Sunday", foodItems: sundayFood)
 foodData.addEatenCalsFromFood(foodItems: sundayFood)
 
+// calling the finished calorie amounts for wach day of the week
+// first is the amount eaten for the day and second is the calories left in the goal
 if let totCalMonday = foodData.calcTotalCalories(forDay: "Monday") {
     let calories = Int(round(totCalMonday))
     print("\nTotal calories consumed on Monday: \(calories)")
