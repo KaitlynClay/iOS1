@@ -18,17 +18,12 @@ class UserData{
     var nameUser: String
     var emailUser: String
     var phoneUser: String
-    var ageUser: Int
-    var heightUser: Double //inches
-    var weightUser: Double  //pounds
+    
     
     init(nameUser: String, emailUser: String, phoneUser: String, ageUser: Int, heightUser: Double, weightUser: Double) {
         self.nameUser = nameUser
         self.emailUser = emailUser
         self.phoneUser = phoneUser
-        self.ageUser = ageUser
-        self.heightUser = heightUser
-        self.weightUser = weightUser
     }
     
     func introMessage() {
@@ -43,18 +38,9 @@ class UserData{
     }
     
     func login() {
-        print("\nWelcome back \(self.nameUser)!")
+        print("\nWelcome back \(self.nameUser)!\n")
     }
     
-    func calcBMI() -> Double {
-        var calcBMI = (weightUser / (heightUser * heightUser) * 703).rounded(toPlaces: 1)
-        return calcBMI
-    }
-    
-    func disBMI() {
-        let bmi = calcBMI()
-        print("Your BMI is \(bmi)\n")
-    }
     
 }
 
@@ -66,7 +52,6 @@ let userData = UserData(nameUser: nameUserHard, emailUser: emailUserHard, phoneU
 userData.introMessage()
 userData.signUp()
 userData.login()
-userData.disBMI()
 
 
 class FoodCalcs{
@@ -90,80 +75,46 @@ class FoodCalcs{
                                             "canola oil": [218, 0, 0, 0, 219, 13.69, 6.85, 20.56],
                                             "worcesterchire": [0, 47.3, 0, 0, 245, 15.31, 7.65, 22.95],
                                             "peanut butter": [130, 50.5, 15.5, 64.7, 258, 16.13, 8.07, 24.21],
-                                            "grape jelly":[0, 13, 1, 0, 320, 20, 10, 30]]
-    func nutritionAmounts(for foodName: String, amount: Double, unit: String) -> [Double]?  {
+                                            "grape jelly":[0, 208, 16, 0, 320, 20, 10, 30]]
+
+    
+
+    
+    func nutritionAmounts(for foodName: String, amount: Double, unit: String) -> [Double]? {
         if let foodInfo = foodDataDict[foodName] {
-            if unit == "cups" {
-                let conversionFactor = foodInfo[4]
-                let amountInGrams = amount * conversionFactor
-                let nutritionAmount: [Double] = [
-                    (foodInfo[0] / conversionFactor) * amountInGrams,
-                    (foodInfo[1] / conversionFactor) * amountInGrams,
-                    (foodInfo[2] / conversionFactor) * amountInGrams,
-                    (foodInfo[3] / conversionFactor) * amountInGrams
-                ]
-                return nutritionAmount
-            } else if unit == "fluid ounces" {
-                let conversionFactor = 8.0
-                let amountInCups = amount / conversionFactor
-                let cupsToGrams = foodInfo[4]
-                let amountInGrams = amountInCups * cupsToGrams
-                let nutritrionAmount: [Double] = [
-                    (foodInfo[0] / cupsToGrams) * amountInGrams,
-                    (foodInfo[1] / cupsToGrams) * amountInGrams,
-                    (foodInfo[2] / cupsToGrams) * amountInGrams,
-                    (foodInfo[3] / cupsToGrams) * amountInGrams
-                ]
-                return nutritrionAmount
-            } else if  unit == "pounds"{
-                let conversionFactor = foodInfo[5]
-                let amountInCups = amount * conversionFactor
-                let cupsToGrams = foodInfo[4]
-                let amountInGrams = amountInCups * cupsToGrams
-                let nutritionAmount: [Double] = [
-                    (foodInfo[0] / cupsToGrams) * amountInGrams,
-                    (foodInfo[1] / cupsToGrams) * amountInGrams,
-                    (foodInfo[2] / cupsToGrams) * amountInGrams,
-                    (foodInfo[3] / cupsToGrams) * amountInGrams
-                ]
-                return nutritionAmount
-            } else if  unit == "teaspoons"{
-                let conversionFactor = foodInfo[6]
-                let amountInGrams = amount * conversionFactor
-                let nutritionAmount: [Double] = [
-                    foodInfo[0] * amountInGrams,
-                    foodInfo[1] * amountInGrams,
-                    foodInfo[2] * amountInGrams,
-                    foodInfo[3] * amountInGrams
-                ]
-                return nutritionAmount
-            } else if  unit == "tablespoons"{
-                let conversionFactor = foodInfo[7]
-                let amountInGrams = amount * conversionFactor
-                let nutritionAmount: [Double] = [
-                    foodInfo[0] * amountInGrams,
-                    foodInfo[1] * amountInGrams,
-                    foodInfo[2] * amountInGrams,
-                    foodInfo[3] * amountInGrams
-                ]
-                return nutritionAmount
+            let gramsPerUnit: Double
+            
+            switch unit {
+            case "cups":
+                gramsPerUnit = foodInfo[4]
+            case "fluid ounces":
+                gramsPerUnit = foodInfo[4] / 8.0
+            case "pounds":
+                gramsPerUnit = foodInfo[5] / 16.0
+            case "teaspoon":
+                gramsPerUnit = foodInfo[6]
+            case "tablespoons":
+                gramsPerUnit = foodInfo[7]
+            default:
+                gramsPerUnit = 1.0
             }
+            
+            
+            let amountInGrams = amount * gramsPerUnit
+            
+            let nutritionAmount: [Double] = [
+            (foodInfo[0] / foodInfo[4]) * amountInGrams,
+            (foodInfo[1] / foodInfo[4]) * amountInGrams,
+            (foodInfo[2] / foodInfo[4]) * amountInGrams,
+            (foodInfo[3] / foodInfo[4]) * amountInGrams
+            ]
+            return nutritionAmount
         }
         return nil
     }
     
-//    func calcTotalCalories(ingredients: [(String, Double, String)]) -> Double? {
-//        var totalCalories = 0.0
-//        for (foodName, amount, unit) in ingredients {
-//            if let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
-//                let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
-//                totalCalories += calories
-//            } else {
-//                return nil
-//            }
-//        }
-//        return totalCalories
-//    }
+    
+
     
     struct CalorieTracker {
         var dayCalorieAmount: Double = 0.0
@@ -182,20 +133,21 @@ class FoodCalcs{
     }
     var calorieTrack = CalorieTracker()
     
-//    func addEatenCaloriesFromFood(foodItems: [(String, Double, String)]) {
-//        for (foodName, amount, unit) in foodItems {
-//            if  let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
-//                let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
-//                calorieTrack.addEatenCalorieAmount(calories: calories)
-//            }
-//        }
-//    }
+
     
     var weeklyFoodInputs: [String: DailyFoodInput] = [:]
     
     func addFoodToInput(day: String, foodItems: [(String, Double, String)]) {
         let dailyInput = DailyFoodInput(day: day, foodItems: foodItems)
         weeklyFoodInputs[day] = dailyInput
+    }
+    
+    func setCalorieGoal(forDay day: String, calories: Double) {
+            foodData.calorieTrack.setDayCalorieAmount(calories: calories)
+        }
+
+    func getCalorieGoal(forDay day: String) -> Double? {
+        return foodData.calorieTrack.dayCalorieAmount
     }
     
     func calcTotalCalories(forDay day: String) -> Double? {
@@ -215,12 +167,11 @@ class FoodCalcs{
         return totalCals
     }
     
-    func calcRemainingCals(forDay day: String) -> Double? {
+    func calcRemainingCals(forDay day: String, calorieGoal: Double) -> Double? {
         guard let dailyInput = weeklyFoodInputs[day]
         else {
             return nil
         }
-        let totalCals = calcTotalCalories(forDay: day) ?? 0.0
         let eatenCals = dailyInput.foodItems.reduce(0.0) { result, foodItem in
             if let nutritionAmount = nutritionAmounts(for: foodItem.0, amount: foodItem.1, unit: foodItem.2) {
                 let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
@@ -229,7 +180,7 @@ class FoodCalcs{
                 return result
             }
         }
-        return totalCals - eatenCals
+        return max(0, calorieGoal - eatenCals)
     }
     
     func addEatenCalsFromFood(foodItems: [(String, Double, String)]) {
@@ -244,80 +195,157 @@ class FoodCalcs{
 }
 
 let foodData = FoodCalcs()
-foodData.calorieTrack.setDayCalorieAmount(calories: 2000)
+let calorieGoalMonday: Double = 2000
+let calorieGoalTuesday: Double = 2080
+let calorieGoalWednesday: Double = 1900
+let calorieGoalThursday: Double = 3000
+let calorieGoalFriday: Double = 2230
+let calorieGoalSaturday: Double = 2000
+let calorieGoalSunday: Double = 1700
 
-let itemName = "whole milk"
-let amount = 16
-let unit = "fluid ounces"
+
+foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalMonday)
+foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalTuesday)
+foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalWednesday)
+foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalThursday)
+foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalFriday)
+foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalSaturday)
+foodData.calorieTrack.setDayCalorieAmount(calories: calorieGoalSunday)
+
+
+
+
 
 let mondayFood = [
-    ("whole milk", 2, "cups"),
-    ("peanut butter", 2.0, "tablespoons"),
-    ("grape jelly", 2, "tablespoons")
+    ("peanut butter", 1, "cups"),
+    ("salted butter", 2.0, "tablespoons"),
+    ("ketchup", 2, "tablespoons")
 ]
 
-//for (foodName, amount, unit) in mondayFood {
-//    if let nutritionAmount = foodData.nutritionAmounts(for: foodName, amount: amount, unit: unit) {
-//        let fat = nutritionAmount[0]
-//        let carbs = nutritionAmount[1]
-//        let fiber = nutritionAmount[2]
-//        let protein = nutritionAmount[3]
-//        print("Nutritional amounts for \(amount) \(unit) of \(itemName)")
-//        print("Fat: \(fat) grams")
-//        print("Carbs: \(carbs) grams")
-//        print("Fiber: \(fiber) grams")
-//        print("Protien: \(protein) grams")
-//    } else {
-//        print("Food not found in directory")
-//    }
-//    }
+let tuesdayFood = [
+    ("whole milk", 1, "cups"),
+    ("all purpose flour", 2.0, "tablespoons"),
+    ("cheddar cheese", 1, "cups")
+]
+
+let wednesdayFood = [
+    ("iceburg lettuce", 2, "cups"),
+    ("carrot", 4.0, "tablespoons"),
+    ("onion", 1, "tablespoons")
+]
+
+let thursdayFood = [
+    ("sweet pepper", 2, "cups"),
+    ("green beans", 1.0, "cups"),
+    ("salted butter", 2, "tablespoons")
+]
+
+let fridayFood = [
+    ("whole milk", 6, "tablespoons"),
+    ("all purpose flour", 3.0, "cups"),
+    ("olive oil", 2, "tablespoons")
+]
+
+let saturdayFood = [
+    ("carrot", 1, "cups"),
+    ("grape jelly", 4.0, "tablespoons"),
+    ("cheddar cheese", 1, "cups")
+]
+
+let sundayFood = [
+    ("peanut butter", 1.0, "cups"),
+    ("all purpose flour", 4, "cups"),
+    ("canola oil", 2, "tablespoons")
+]
+
 
      
                    
 foodData.addFoodToInput(day: "Monday", foodItems: mondayFood)
 foodData.addEatenCalsFromFood(foodItems: mondayFood)
+foodData.addFoodToInput(day: "Tuesday", foodItems: tuesdayFood)
+foodData.addEatenCalsFromFood(foodItems: tuesdayFood)
+foodData.addFoodToInput(day: "Wednesday", foodItems: wednesdayFood)
+foodData.addEatenCalsFromFood(foodItems: wednesdayFood)
+foodData.addFoodToInput(day: "Thursday", foodItems: thursdayFood)
+foodData.addEatenCalsFromFood(foodItems: thursdayFood)
+foodData.addFoodToInput(day: "Friday", foodItems: fridayFood)
+foodData.addEatenCalsFromFood(foodItems: fridayFood)
+foodData.addFoodToInput(day: "Saturday", foodItems: saturdayFood)
+foodData.addEatenCalsFromFood(foodItems: saturdayFood)
+foodData.addFoodToInput(day: "Sunday", foodItems: sundayFood)
+foodData.addEatenCalsFromFood(foodItems: sundayFood)
 
 if let totCalMonday = foodData.calcTotalCalories(forDay: "Monday") {
     let calories = Int(round(totCalMonday))
-    print("Total calories consumed on Monday: \(calories)")
+    print("\nTotal calories consumed on Monday: \(calories)")
+}
+if let remainingCalMonday = foodData.calcRemainingCals(forDay: "Monday", calorieGoal: calorieGoalMonday) {
+    let remainCal = Int(round(remainingCalMonday))
+    print("Remaining calories for Monday: \(remainCal)\n")
 }
 
-if let remainingCalMonday = foodData.calcRemainingCals(forDay: "Monday") {
-    let remainCal = Int(round(remainingCalMonday))
-    print("Remainnig calories for Monday: \(remainCal)")
+
+if let totCalTuesday = foodData.calcTotalCalories(forDay: "Tuesday") {
+    let calories = Int(round(totCalTuesday))
+    print("Total calories consumed on Tuesday: \(calories)")
+}
+if let remainingCalTuesday = foodData.calcRemainingCals(forDay: "Tuesday", calorieGoal: calorieGoalTuesday) {
+    let remainCal = Int(round(remainingCalTuesday))
+    print("Remaining calories for Tuesday: \(remainCal)\n")
+}
+
+
+if let totCalWednesday = foodData.calcTotalCalories(forDay: "Wednesday") {
+    let calories = Int(round(totCalWednesday))
+    print("Total calories consumed on Wednesday: \(calories)")
+}
+if let remainingCalWednesday = foodData.calcRemainingCals(forDay: "Wednesday", calorieGoal: calorieGoalWednesday) {
+    let remainCal = Int(round(remainingCalWednesday))
+    print("Remaining calories for Wednesday: \(remainCal)\n")
+}
+
+
+if let totCalThursday = foodData.calcTotalCalories(forDay: "Thursday") {
+    let calories = Int(round(totCalThursday))
+    print("Total calories consumed on Thursday: \(calories)")
+}
+if let remainingCalThursday = foodData.calcRemainingCals(forDay: "Thursday", calorieGoal: calorieGoalThursday) {
+    let remainCal = Int(round(remainingCalThursday))
+    print("Remaining calories for Thursday: \(remainCal)\n")
+}
+
+
+if let totCalFriday = foodData.calcTotalCalories(forDay: "Friday") {
+    let calories = Int(round(totCalFriday))
+    print("Total calories consumed on Friday: \(calories)")
+}
+if let remainingCalFriday = foodData.calcRemainingCals(forDay: "Friday", calorieGoal: calorieGoalFriday) {
+    let remainCal = Int(round(remainingCalFriday))
+    print("Remaining calories for Friday: \(remainCal)\n")
+}
+
+
+if let totCalSaturday = foodData.calcTotalCalories(forDay: "Saturday") {
+    let calories = Int(round(totCalSaturday))
+    print("Total calories for Saturday: \(calories)")
+}
+if let remainingCalSaturday = foodData.calcRemainingCals(forDay: "Saturday", calorieGoal: calorieGoalSaturday) {
+    let remainCal = Int(round(remainingCalSaturday))
+    print("Remaining calories consumed for Saturday: \(remainCal)\n")
+}
+
+
+if let totCalSunday = foodData.calcTotalCalories(forDay: "Sunday") {
+    let calories = Int(round(totCalSunday))
+    print("Total calories consumed on Sunday: \(calories)")
+}
+if let remainingCalSunday = foodData.calcRemainingCals(forDay: "Sunday", calorieGoal: calorieGoalSunday) {
+    let remainCal = Int(round(remainingCalSunday))
+    print("Remaining calories for Sunday: \(remainCal)")
 }
                    
-//if let nutritionAmount = foodData.nutritionAmounts(for: itemName, amount: Double(amount), unit: unit) {
-//    let fat = Int(round(nutritionAmount[0]))
-//    let carbs = Int(round(nutritionAmount[1]))
-//    let fiber = Int(round(nutritionAmount[2]))
-//    let protein = Int(round(nutritionAmount[3]))
-//    print("Adjusted nutrition for \(amount) \(unit) of \(itemName)")
-//    print("Fat: \(fat) grams")
-//    print("Carbs: \(carbs) grams")
-//    print("Fiber: \(fiber) grams")
-//    print("Protien: \(protein) grams")
-//} else {
-//    print("Food not found in directory")
-//}
 
-//foodData.addEatenCalsFromFood(foodName: itemName, amount: Double(amount), unit: unit)
-
-if let calGoal = foodData.calorieTrack.setDayCalorieAmount(calories: 0) {
-    let goal = Int(calGoal)
-    print("\nCalorie Goal: \(goal) calories")
-}
-
-
-if let totalCalorie = foodData.calcTotalCalories(forDay: "Monday") {
-    let calories = Int(round(totalCalorie))
-    print("Total calories: \(calories) calories")
-}
-    
-if let remainingCalories = foodData.calorieTrack.calcRemainingCalories() {
-    var remainCal = Int(round(remainingCalories))
-    print("Remainng calories: \(remainCal) calories")
-}
 
 
 
