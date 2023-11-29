@@ -331,7 +331,9 @@ foodData.addFoodToInput(day: "Sunday", foodItems: sundayFood)
 foodData.addEatenCalsFromFood(foodItems: sundayFood)
 
 // calling the finished calorie amounts for wach day of the week
-// first is the amount eaten for the day and second is the calories left in the goal
+// first is displaying the calorie goal for the day
+// second is the amount eaten for the day
+// third is the calories left in the goal
 if let calGoal = Optional(calorieGoalMonday) {
     let calGoalInt = Int(calGoal)
     print("\nCalorie goal for Monday: \(calGoalInt)")
