@@ -332,9 +332,13 @@ foodData.addEatenCalsFromFood(foodItems: sundayFood)
 
 // calling the finished calorie amounts for wach day of the week
 // first is the amount eaten for the day and second is the calories left in the goal
+if let calGoal = Optional(calorieGoalMonday) {
+    let calGoalInt = Int(calGoal)
+    print("\nCalorie goal for Monday: \(calGoalInt)")
+}
 if let totCalMonday = foodData.calcTotalCalories(forDay: "Monday") {
     let calories = Int(round(totCalMonday))
-    print("\nTotal calories consumed on Monday: \(calories)")
+    print("Total calories consumed on Monday: \(calories)")
 }
 if let remainingCalMonday = foodData.calcRemainingCals(forDay: "Monday", calorieGoal: calorieGoalMonday) {
     let remainCal = Int(round(remainingCalMonday))
@@ -342,6 +346,10 @@ if let remainingCalMonday = foodData.calcRemainingCals(forDay: "Monday", calorie
 }
 
 
+if let calGoal = Optional(calorieGoalTuesday) {
+    let calGoalInt = Int(calGoal)
+    print("\nCalorie goal for Tuesday: \(calGoalInt)")
+}
 if let totCalTuesday = foodData.calcTotalCalories(forDay: "Tuesday") {
     let calories = Int(round(totCalTuesday))
     print("Total calories consumed on Tuesday: \(calories)")
@@ -352,6 +360,10 @@ if let remainingCalTuesday = foodData.calcRemainingCals(forDay: "Tuesday", calor
 }
 
 
+if let calGoal = Optional(calorieGoalWednesday) {
+    let calGoalInt = Int(calGoal)
+    print("\nCalorie goal for Wednesday: \(calGoalInt)")
+}
 if let totCalWednesday = foodData.calcTotalCalories(forDay: "Wednesday") {
     let calories = Int(round(totCalWednesday))
     print("Total calories consumed on Wednesday: \(calories)")
@@ -362,6 +374,10 @@ if let remainingCalWednesday = foodData.calcRemainingCals(forDay: "Wednesday", c
 }
 
 
+if let calGoal = Optional(calorieGoalThursday) {
+    let calGoalInt = Int(calGoal)
+    print("\nCalorie goal for Thursday: \(calGoalInt)")
+}
 if let totCalThursday = foodData.calcTotalCalories(forDay: "Thursday") {
     let calories = Int(round(totCalThursday))
     print("Total calories consumed on Thursday: \(calories)")
@@ -372,6 +388,10 @@ if let remainingCalThursday = foodData.calcRemainingCals(forDay: "Thursday", cal
 }
 
 
+if let calGoal = Optional(calorieGoalFriday) {
+    let calGoalInt = Int(calGoal)
+    print("\nCalorie goal for Friday: \(calGoalInt)")
+}
 if let totCalFriday = foodData.calcTotalCalories(forDay: "Friday") {
     let calories = Int(round(totCalFriday))
     print("Total calories consumed on Friday: \(calories)")
@@ -382,6 +402,10 @@ if let remainingCalFriday = foodData.calcRemainingCals(forDay: "Friday", calorie
 }
 
 
+if let calGoal = Optional(calorieGoalSaturday) {
+    let calGoalInt = Int(calGoal)
+    print("\nCalorie goal for Saturday: \(calGoalInt)")
+}
 if let totCalSaturday = foodData.calcTotalCalories(forDay: "Saturday") {
     let calories = Int(round(totCalSaturday))
     print("Total calories for Saturday: \(calories)")
@@ -392,6 +416,10 @@ if let remainingCalSaturday = foodData.calcRemainingCals(forDay: "Saturday", cal
 }
 
 
+if let calGoal = Optional(calorieGoalSunday) {
+    let calGoalInt = Int(calGoal)
+    print("\nCalorie goal for Sunday: \(calGoalInt)")
+}
 if let totCalSunday = foodData.calcTotalCalories(forDay: "Sunday") {
     let calories = Int(round(totCalSunday))
     print("Total calories consumed on Sunday: \(calories)")
