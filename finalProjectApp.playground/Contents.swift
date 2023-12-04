@@ -99,7 +99,7 @@ class FoodCalcs{
                                             "green beans": [0.4, 9.9, 4, 2.4, 125, 7.81, 3.9, 11.7],
                                             "salted butter": [184.1, 0.1, 0, 1.9, 227, 14.18, 7.09, 21.26],
                                             "sweet pepper": [0.4, 9.4, 3.1, 1.5, 149, 9.31, 4.66, 13.98],
-                                            "carrot": [0.3, 12.3, 3.6, 1.2, 128, 8, 4,12],
+                                            "carrot": [0.3, 12.3, 3.6, 1.2, 128, 8, 4, 12],
                                             "onion": [0.1, 3.8, 0.5, 0.3, 160, 10, 5, 15],
                                             "all purpose flour": [1.2, 95.4, 3.4, 12.9, 125, 7.81, 3.9, 11.7],
                                             "soy sauce": [0.1, 19.4, 2, 16, 237, 14.81, 7.41, 22.23],
@@ -410,11 +410,11 @@ if let calGoal = Optional(calorieGoalSaturday) {
 }
 if let totCalSaturday = foodData.calcTotalCalories(forDay: "Saturday") {
     let calories = Int(round(totCalSaturday))
-    print("Total calories for Saturday: \(calories)")
+    print("Total calories consumed for Saturday: \(calories)")
 }
 if let remainingCalSaturday = foodData.calcRemainingCals(forDay: "Saturday", calorieGoal: calorieGoalSaturday) {
     let remainCal = Int(round(remainingCalSaturday))
-    print("Remaining calories consumed for Saturday: \(remainCal)\n")
+    print("Remaining calories for Saturday: \(remainCal)\n")
 }
 
 
