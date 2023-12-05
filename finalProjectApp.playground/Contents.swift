@@ -240,7 +240,7 @@ class FoodCalcs{
             if let nutritionAmount = nutritionAmounts(for: foodName, amount: amount, unit: unit) {
                 let calories = (nutritionAmount[0] * 9) + (nutritionAmount[1] * 4) + (nutritionAmount[3] * 4)
                 calorieTrack.addEatenCalorieAmount(calories: calories)
-                print("Consumed \(Int(round(calories))) calories from \(amount) \(unit) of \(foodName)")
+//                print("Consumed \(Int(round(calories))) calories from \(amount) \(unit) of \(foodName)")
             }
         }
     }
